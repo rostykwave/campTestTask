@@ -1,4 +1,6 @@
 abstract class Show {
+  private views: number = 0;
+
   constructor(
     protected name: string,
     protected genre: { genresList: string },
@@ -15,6 +17,13 @@ abstract class Show {
   }
   getReleaseDate(): Date {
     return this.releaseDate;
+  }
+
+  setViews(views: number): void {
+    this.views = views;
+  }
+  getViews(): number {
+    return this.views;
   }
 }
 
@@ -78,25 +87,48 @@ class StreamingService {
     this.shows.push(show);
   }
 
-  getMostViewedShowsOfYear(year: number): Map<Show, number> {
+  getMostViewedShowsOfYear(year: number): Show[] {
     const allShowsFromQueriedYear = [...this.viewsByShowNames.entries()].filter(
       show => show[0].getReleaseDate().getFullYear() === year
     );
-    const notSortedMap = new Map(allShowsFromQueriedYear);
-    const sortedMap = this.sortMapByViews(notSortedMap);
-    console.log(`getMostViewedShowsOfYear: ${year}`, sortedMap);
-    return sortedMap;
+
+    const allSortedShows = [...allShowsFromQueriedYear]
+      .sort((a, b) => b[1] - a[1])
+      .map(a => {
+        a[0].setViews(a[1]);
+        return a[0];
+      });
+
+    if (allSortedShows.length > 10) {
+      const firstTen = allSortedShows.slice(0, 10);
+      console.log('StreamingService.getMostViewedShowsOfYear >10', firstTen);
+      return firstTen;
+    }
+
+    console.log('StreamingService.getMostViewedShowsOfYear', allSortedShows);
+    return allSortedShows;
   }
 
-  getMostViewedShowsOfGenre(genre: string): Map<Show, number> {
+  getMostViewedShowsOfGenre(genre: string): Show[] {
     const allShowsFromQueriedGenre = [
       ...this.viewsByShowNames.entries(),
     ].filter(show => show[0].getGenre().genresList.includes(genre));
 
-    const notSortedMap = new Map(allShowsFromQueriedGenre);
-    const sortedMap = this.sortMapByViews(notSortedMap);
-    console.log(`getMostViewedShowsOfGenre: ${genre}`, sortedMap);
-    return sortedMap;
+    const allSortedShows = [...allShowsFromQueriedGenre]
+      .sort((a, b) => b[1] - a[1])
+      .map(a => {
+        a[0].setViews(a[1]);
+        return a[0];
+      });
+
+    if (allSortedShows.length > 10) {
+      const firstTen = allSortedShows.slice(0, 10);
+      console.log('StreamingService.getMostViewedShowsOfGenre >10', firstTen);
+      return firstTen;
+    }
+
+    console.log('StreamingService.getMostViewedShowsOfGenre', allSortedShows);
+    return allSortedShows;
   }
 
   getShows(): Show[] {
@@ -112,20 +144,6 @@ class StreamingService {
 
   getName() {
     return this.name;
-  }
-
-  private sortMapByViews(notSortedMap: Map<Show, number>): Map<Show, number> {
-    const sortedByViews = [...notSortedMap].sort((a, b) => b[1] - a[1]);
-
-    if (sortedByViews.length > 10) {
-      const firstTen = sortedByViews.slice(0, 10);
-      const firstTenMap = new Map(firstTen);
-      return firstTenMap;
-    }
-
-    const sortedByViewsMap = new Map(sortedByViews);
-
-    return sortedByViewsMap;
   }
 }
 
@@ -155,12 +173,16 @@ class Subscription {
       mostViewedShowsOfYear
     );
 
-    console.log('recommendationTrending', recommendationTrending);
+    console.log(
+      'Subscription - recommendationTrending',
+      recommendationTrending
+    );
 
     return recommendationTrending;
   }
 
   getRecommendationByGenre(genre: string): Show {
+    console.log('genre', genre);
     const mostViewedShowsOfYear =
       this.streamingService.getMostViewedShowsOfGenre(genre);
 
@@ -168,7 +190,7 @@ class Subscription {
       mostViewedShowsOfYear
     );
 
-    console.log('recommendationByGenre', recommendationByGenre);
+    console.log('Subscription - recommendationByGenre', recommendationByGenre);
 
     return recommendationByGenre;
   }
@@ -177,14 +199,13 @@ class Subscription {
     return this.streamingService;
   }
 
-  private randomShowSelection(showMap: Map<Show, number>): Show {
-    const ArrayFromShowMap = [...showMap.entries()];
-
-    const arrayLength = ArrayFromShowMap.length;
+  private randomShowSelection(showsArray: Show[]): Show {
+    const arrayLength = showsArray.length;
+    if (!(arrayLength > 0)) {
+      console.log('There is no shows with this parameters to recommend');
+    }
     const random = Math.floor(Math.random() * arrayLength);
-
-    const randomSelection = ArrayFromShowMap[random][0];
-
+    const randomSelection = showsArray[random];
     return randomSelection;
   }
 }
