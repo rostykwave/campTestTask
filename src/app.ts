@@ -61,6 +61,7 @@ class Series extends Show {
 class StreamingService {
   private shows: Show[] = [];
   protected viewsByShowNames: Map<Show['name'], number> = new Map();
+  // protected viewsByShowNames: Map<Show, number> = new Map();
   //change string of name to full object of film
 
   constructor(protected name: string) {}
@@ -85,14 +86,18 @@ class StreamingService {
   }
 
   getMostViewedShowsOfYear(year: number): [] {
+    //sort them from most viewed to less (values)
+
     //find all films from that yeart
     //release date
-    //sort them from most viewed to less (values)
     console.log(year);
-    this.viewsByShowNames.forEach((value, key) => {
-      console.log(key, value);
-    });
+    const notSorted = [...this.viewsByShowNames];
+    const sortedMap = [...this.viewsByShowNames.entries()].sort(
+      (a, b) => b[1] - a[1]
+    );
 
+    console.log('notSorted', notSorted);
+    console.log('sortedMap', sortedMap);
     //     повертає до десяти найбільш
     // переглянутих шоу, які вийшли в заданому році (менше десяти, якщо загальна
     // кількість шоу менша за 10).
