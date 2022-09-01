@@ -158,10 +158,17 @@ class Subscription {
     return recommendationTrending;
   }
 
-  getRecommendationByGenre(genre: string): void {
-    console.log('genre', genre);
-    // this.streamingService.getMostViewedShowsOfGenre();
-    //рандомно вибирає елемент масиву, сортує по тривалості.
+  getRecommendationByGenre(genre: string): Show {
+    const mostViewedShowsOfYear =
+      this.streamingService.getMostViewedShowsOfGenre(genre);
+
+    const recommendationByGenre = this.randomShowSelection(
+      mostViewedShowsOfYear
+    );
+
+    console.log('recommendationByGenre', recommendationByGenre);
+
+    return recommendationByGenre;
   }
 
   private randomShowSelection(showMap: Map<Show, number>): Show {
@@ -258,3 +265,4 @@ console.log('netflix', netflix);
 // netflix.getMostViewedShowsOfGenre('Adventure');
 
 subscription.getRecommendationTrending(2022);
+subscription.getRecommendationByGenre('Adventure');
