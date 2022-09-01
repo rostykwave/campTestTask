@@ -66,9 +66,7 @@ class Series extends Show {
 
 class StreamingService {
   private shows: Show[] = [];
-  // protected viewsByShowNames: Map<Show['name'], number> = new Map();
   protected viewsByShowNames: Map<Show, number> = new Map();
-  //change string of name to full object of film
 
   constructor(protected name: string) {}
 
@@ -185,7 +183,6 @@ class Subscription {
 
 class User {
   private subscriptions: Subscription[] = [];
-  // constructor() {}
 
   subscribe(streamingService: StreamingService): Subscription {
     const newSubscription = new Subscription(streamingService);
