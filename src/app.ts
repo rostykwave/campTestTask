@@ -199,7 +199,6 @@ class User {
 
     if (isAlreadySubscribed) {
       console.log(`User already subscribed to ${streamingService.getName()}`);
-
       return null;
     }
 
@@ -261,7 +260,7 @@ const series = new Series(
 const netflix = new StreamingService('Netflix');
 // console.log('netflix before', netflix);
 netflix.addShow(movieInterstellar);
-// netflix.addShow(movieInterstellar);
+netflix.addShow(movieInterstellar);
 netflix.addShow(movieMinionsTheRiseofGru);
 netflix.addShow(movieJurassicWorldDominion);
 netflix.addShow(series);
