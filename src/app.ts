@@ -231,24 +231,24 @@ const movieJurassicWorldDominion = new Movie(
   187
 );
 
-const episode1 = new Episode(
+const seriesMoneyHeistEP1 = new Episode(
   'Efectuar lo acordado',
   { genresList: 'Heist, Thriller, Drama, Crime' },
   new Date('2017-05-02T00:00:00'),
   47
 );
-const episode2 = new Episode(
+const seriesMoneyHeistEP2 = new Episode(
   'Imprudencias letales',
   { genresList: 'Heist, Thriller, Drama, Crime' },
   new Date('2017-05-02T00:00:00'),
   41
 );
 
-const series = new Series(
+const seriesMoneyHeist = new Series(
   'Money Heist',
   { genresList: 'Heist, Thriller, Drama, Crime' },
   new Date('2017-05-02T00:00:00'),
-  [episode1, episode2]
+  [seriesMoneyHeistEP1, seriesMoneyHeistEP2]
 );
 
 // console.log(movie);
@@ -260,11 +260,12 @@ const series = new Series(
 const netflix = new StreamingService('Netflix');
 // console.log('netflix before', netflix);
 netflix.addShow(movieInterstellar);
+//dublicate
 netflix.addShow(movieInterstellar);
+////
 netflix.addShow(movieMinionsTheRiseofGru);
 netflix.addShow(movieJurassicWorldDominion);
-netflix.addShow(series);
-// console.log('netflix after', netflix);
+netflix.addShow(seriesMoneyHeist);
 
 const subscription = new Subscription(netflix);
 console.log('subscription', subscription);
@@ -272,8 +273,9 @@ subscription.watch('Money Heist');
 subscription.watch('Interstellar');
 subscription.watch('Interstellar');
 subscription.watch('Minions: The Rise of Gru');
-
+///not added to library
 subscription.watch('Spiderman');
+///
 subscription.watch('Jurassic World Dominion');
 subscription.watch('Jurassic World Dominion');
 subscription.watch('Jurassic World Dominion');
@@ -287,6 +289,7 @@ subscription.getRecommendationByGenre('Adventure');
 
 const rostyk = new User();
 rostyk.subscribe(netflix);
+//not allowed to subscribe more than one time
 rostyk.subscribe(netflix);
-
+//
 console.log('rostyk', rostyk);
