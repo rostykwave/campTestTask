@@ -145,14 +145,35 @@ class Subscription {
     this.streamingService.addViewByShowObject(queriedShow);
   }
 
-  // getRecommendationTrending(): void {
-  //   this.streamingService.getMostViewedShowsOfYear();
-  //   //рандомно вибирає елемент масиву, сортує по тривалості.
-  // }
-  // getRecommendationByGenre(genre: string): void {
-  //   this.streamingService.getMostViewedShowsOfGenre();
-  //   //рандомно вибирає елемент масиву, сортує по тривалості.
-  // }
+  getRecommendationTrending(year: number): Show {
+    const mostViewedShowsOfYear =
+      this.streamingService.getMostViewedShowsOfYear(year);
+
+    const recommendationTrending = this.randomShowSelection(
+      mostViewedShowsOfYear
+    );
+
+    console.log('recommendationTrending', recommendationTrending);
+
+    return recommendationTrending;
+  }
+
+  getRecommendationByGenre(genre: string): void {
+    console.log('genre', genre);
+    // this.streamingService.getMostViewedShowsOfGenre();
+    //рандомно вибирає елемент масиву, сортує по тривалості.
+  }
+
+  private randomShowSelection(showMap: Map<Show, number>): Show {
+    const ArrayFromShowMap = [...showMap.entries()];
+
+    const arrayLength = ArrayFromShowMap.length;
+    const random = Math.floor(Math.random() * arrayLength);
+
+    const randomSelection = ArrayFromShowMap[random][0];
+
+    return randomSelection;
+  }
 }
 
 // class User {
@@ -233,5 +254,7 @@ subscription.watch('Jurassic World Dominion');
 subscription.watch('Jurassic World Dominion');
 console.log('netflix', netflix);
 
-netflix.getMostViewedShowsOfYear(2022);
-netflix.getMostViewedShowsOfGenre('Adventure');
+// netflix.getMostViewedShowsOfYear(2022);
+// netflix.getMostViewedShowsOfGenre('Adventure');
+
+subscription.getRecommendationTrending(2022);
