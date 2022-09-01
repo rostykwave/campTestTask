@@ -183,15 +183,18 @@ class Subscription {
   }
 }
 
-// class User {
-//   private subscriptions: [];
-//   constructor() {}
+class User {
+  private subscriptions: Subscription[] = [];
+  // constructor() {}
 
-//   subscribe(streamingService: {}): {} {
-//     this.subscriptions.push(streamingService);
-//     return this.subscriptions;
-//   }
-// }
+  subscribe(streamingService: StreamingService): Subscription {
+    const newSubscription = new Subscription(streamingService);
+
+    this.subscriptions.push(newSubscription);
+
+    return newSubscription;
+  }
+}
 
 ///////////Execution
 const movieInterstellar = new Movie(
@@ -266,3 +269,8 @@ console.log('netflix', netflix);
 
 subscription.getRecommendationTrending(2022);
 subscription.getRecommendationByGenre('Adventure');
+
+const rostyk = new User();
+rostyk.subscribe(netflix);
+
+console.log('rostyk', rostyk);
