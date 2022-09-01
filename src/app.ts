@@ -10,6 +10,9 @@ abstract class Show {
   getName(): string {
     return this.name;
   }
+  getGenre(): { genresList: string } {
+    return this.genre;
+  }
   getReleaseDate(): Date {
     return this.releaseDate;
   }
@@ -81,27 +84,22 @@ class StreamingService {
     const allShowsFromQueriedYear = [...this.viewsByShowNames.entries()].filter(
       show => show[0].getReleaseDate().getFullYear() === year
     );
-
-    const sortedByViews = [...allShowsFromQueriedYear].sort(
-      (a, b) => b[1] - a[1]
-    );
-
-    if (sortedByViews.length > 10) {
-      const firstTen = sortedByViews.slice(0, 10);
-      const firstTenMap = new Map(firstTen);
-      console.log('firstTenMap', firstTenMap);
-      return firstTenMap;
-    }
-
-    const sortedByViewsMap = new Map(sortedByViews);
-    console.log('sortedByViewsMap', sortedByViewsMap);
-
-    return sortedByViewsMap;
+    const notSortedMap = new Map(allShowsFromQueriedYear);
+    const sortedMap = this.sortMapByViews(notSortedMap);
+    console.log(`getMostViewedShowsOfYear: ${year}`, sortedMap);
+    return sortedMap;
   }
-  //   getMostViewedShowsOfGenre(genre): void {
 
-  //    //
-  //   }
+  getMostViewedShowsOfGenre(genre: string): Map<Show, number> {
+    const allShowsFromQueriedGenre = [
+      ...this.viewsByShowNames.entries(),
+    ].filter(show => show[0].getGenre().genresList.includes(genre));
+
+    const notSortedMap = new Map(allShowsFromQueriedGenre);
+    const sortedMap = this.sortMapByViews(notSortedMap);
+    console.log(`getMostViewedShowsOfGenre: ${genre}`, sortedMap);
+    return sortedMap;
+  }
 
   getShows(): Show[] {
     return this.shows;
@@ -112,6 +110,20 @@ class StreamingService {
     views ? (views += 1) : (views = 1);
 
     this.viewsByShowNames.set(show, views);
+  }
+
+  private sortMapByViews(notSortedMap: Map<Show, number>): Map<Show, number> {
+    const sortedByViews = [...notSortedMap].sort((a, b) => b[1] - a[1]);
+
+    if (sortedByViews.length > 10) {
+      const firstTen = sortedByViews.slice(0, 10);
+      const firstTenMap = new Map(firstTen);
+      return firstTenMap;
+    }
+
+    const sortedByViewsMap = new Map(sortedByViews);
+
+    return sortedByViewsMap;
   }
 }
 
@@ -222,3 +234,4 @@ subscription.watch('Jurassic World Dominion');
 console.log('netflix', netflix);
 
 netflix.getMostViewedShowsOfYear(2022);
+netflix.getMostViewedShowsOfGenre('Adventure');
