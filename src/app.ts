@@ -110,6 +110,10 @@ class StreamingService {
     this.viewsByShowNames.set(show, views);
   }
 
+  getName() {
+    return this.name;
+  }
+
   private sortMapByViews(notSortedMap: Map<Show, number>): Map<Show, number> {
     const sortedByViews = [...notSortedMap].sort((a, b) => b[1] - a[1]);
 
@@ -169,6 +173,10 @@ class Subscription {
     return recommendationByGenre;
   }
 
+  getStreamingService() {
+    return this.streamingService;
+  }
+
   private randomShowSelection(showMap: Map<Show, number>): Show {
     const ArrayFromShowMap = [...showMap.entries()];
 
@@ -184,11 +192,22 @@ class Subscription {
 class User {
   private subscriptions: Subscription[] = [];
 
-  subscribe(streamingService: StreamingService): Subscription {
+  subscribe(streamingService: StreamingService): Subscription | null {
+    const isAlreadySubscribed = !!this.subscriptions.find(
+      sub => sub.getStreamingService() === streamingService
+    );
+
+    if (isAlreadySubscribed) {
+      console.log(`User already subscribed to ${streamingService.getName()}`);
+
+      return null;
+    }
+
     const newSubscription = new Subscription(streamingService);
 
     this.subscriptions.push(newSubscription);
 
+    console.log('newSubscription', newSubscription);
     return newSubscription;
   }
 }
@@ -268,6 +287,7 @@ subscription.getRecommendationTrending(2022);
 subscription.getRecommendationByGenre('Adventure');
 
 const rostyk = new User();
+rostyk.subscribe(netflix);
 rostyk.subscribe(netflix);
 
 console.log('rostyk', rostyk);
