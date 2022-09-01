@@ -10,6 +10,9 @@ abstract class Show {
   getName(): string {
     return this.name;
   }
+  getReleaseDate(): Date {
+    return this.releaseDate;
+  }
 }
 
 class Movie extends Show {
@@ -60,8 +63,8 @@ class Series extends Show {
 
 class StreamingService {
   private shows: Show[] = [];
-  protected viewsByShowNames: Map<Show['name'], number> = new Map();
-  // protected viewsByShowNames: Map<Show, number> = new Map();
+  // protected viewsByShowNames: Map<Show['name'], number> = new Map();
+  protected viewsByShowNames: Map<Show, number> = new Map();
   //change string of name to full object of film
 
   constructor(protected name: string) {}
@@ -74,58 +77,60 @@ class StreamingService {
     this.shows.push(show);
   }
 
-  getShows(): Show[] {
-    return this.shows;
-  }
+  getMostViewedShowsOfYear(year: number): Map<Show, number> {
+    const allShowsFromQueriedYear = [...this.viewsByShowNames.entries()].filter(
+      show => show[0].getReleaseDate().getFullYear() === year
+    );
 
-  addViewByShowNames(showName: string): void {
-    let views = this.viewsByShowNames.get(showName);
-    views ? (views += 1) : (views = 1);
-
-    this.viewsByShowNames.set(showName, views);
-  }
-
-  getMostViewedShowsOfYear(year: number): [] {
-    //sort them from most viewed to less (values)
-
-    //find all films from that yeart
-    //release date
-    console.log(year);
-    const notSorted = [...this.viewsByShowNames];
-    const sortedMap = [...this.viewsByShowNames.entries()].sort(
+    const sortedByViews = [...allShowsFromQueriedYear].sort(
       (a, b) => b[1] - a[1]
     );
 
-    console.log('notSorted', notSorted);
-    console.log('sortedMap', sortedMap);
-    //     повертає до десяти найбільш
-    // переглянутих шоу, які вийшли в заданому році (менше десяти, якщо загальна
-    // кількість шоу менша за 10).
-    return [];
+    if (sortedByViews.length > 10) {
+      const firstTen = sortedByViews.slice(0, 10);
+      const firstTenMap = new Map(firstTen);
+      console.log('firstTenMap', firstTenMap);
+      return firstTenMap;
+    }
+
+    const sortedByViewsMap = new Map(sortedByViews);
+    console.log('sortedByViewsMap', sortedByViewsMap);
+
+    return sortedByViewsMap;
   }
   //   getMostViewedShowsOfGenre(genre): void {
 
   //    //
   //   }
+
+  getShows(): Show[] {
+    return this.shows;
+  }
+
+  addViewByShowObject(show: Show): void {
+    let views = this.viewsByShowNames.get(show);
+    views ? (views += 1) : (views = 1);
+
+    this.viewsByShowNames.set(show, views);
+  }
 }
 
 class Subscription {
   constructor(protected streamingService: StreamingService) {}
 
   watch(showName: string): void {
-    const isShowsListEmpty = !(this.streamingService.getShows().length > 0);
-    const isQueriedShowAddedToService = !this.streamingService
-      .getShows()
-      .find(show => show.getName() === showName);
+    const allShows = this.streamingService.getShows();
+    const isShowsListEmpty = !(allShows.length > 0);
+    const queriedShow = allShows.find(show => show.getName() === showName);
 
     if (isShowsListEmpty) return;
-    if (isQueriedShowAddedToService) {
+    if (!queriedShow) {
       console.log(`${showName} is not available in StreamingService`);
       return;
     }
 
     console.log(`Watching ${showName}`);
-    this.streamingService.addViewByShowNames(showName);
+    this.streamingService.addViewByShowObject(queriedShow);
   }
 
   // getRecommendationTrending(): void {
@@ -149,11 +154,23 @@ class Subscription {
 // }
 
 ///////////Execution
-const movie = new Movie(
+const movieInterstellar = new Movie(
   'Interstellar',
   { genresList: 'Adventure, Drama, Science Fiction' },
   new Date('2014-11-06T00:00:00'),
   169
+);
+const movieMinionsTheRiseofGru = new Movie(
+  'Minions: The Rise of Gru',
+  { genresList: 'Animation, Adventure, Comedy, Fantasy' },
+  new Date('2022-07-01T00:00:00'),
+  87
+);
+const movieJurassicWorldDominion = new Movie(
+  'Jurassic World Dominion',
+  { genresList: 'Adventure, Action, Science Fiction' },
+  new Date('2022-06-23T00:00:00'),
+  187
 );
 
 const episode1 = new Episode(
@@ -183,18 +200,25 @@ const series = new Series(
 /////////////////////////////////////////////
 
 const netflix = new StreamingService('Netflix');
-console.log(netflix);
-netflix.addShow(movie);
-netflix.addShow(movie);
+// console.log('netflix before', netflix);
+netflix.addShow(movieInterstellar);
+// netflix.addShow(movieInterstellar);
+netflix.addShow(movieMinionsTheRiseofGru);
+netflix.addShow(movieJurassicWorldDominion);
 netflix.addShow(series);
-console.log(netflix);
+// console.log('netflix after', netflix);
 
 const subscription = new Subscription(netflix);
 console.log('subscription', subscription);
 subscription.watch('Money Heist');
 subscription.watch('Interstellar');
 subscription.watch('Interstellar');
+subscription.watch('Minions: The Rise of Gru');
+
 subscription.watch('Spiderman');
+subscription.watch('Jurassic World Dominion');
+subscription.watch('Jurassic World Dominion');
+subscription.watch('Jurassic World Dominion');
 console.log('netflix', netflix);
 
-netflix.getMostViewedShowsOfYear(2017);
+netflix.getMostViewedShowsOfYear(2022);
